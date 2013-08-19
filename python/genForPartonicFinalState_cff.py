@@ -5,10 +5,10 @@ from RecoJets.Configuration.GenJetParticles_cff import *
 from RecoJets.Configuration.RecoGenJets_cff import *
 
 genParticlesForPartonicFinalState = genParticlesForJets.clone()
-genParticlesForPartonicFinalState.partonicFinalStates = cms.bool(True)
+genParticlesForPartonicFinalState.partonicFinalState = cms.bool(True)
 
 genParticlesForPartonicFinalStateNoNu = genParticlesForJetsNoNu.clone()
-genParticlesForPartonicFinalStateNoNu.partonicFinalStates = cms.bool(True)
+genParticlesForPartonicFinalStateNoNu.partonicFinalState = cms.bool(True)
 
 ak5GenJetsPartonicFinalState = ak5GenJets.clone( src = cms.InputTag("genParticlesForPartonicFinalState") )
 ak5GenJetsPartonicFinalStateNoNu = ak5GenJets.clone( src = cms.InputTag("genParticlesForPartonicFinalStateNoNu") )
