@@ -39,6 +39,7 @@ private:
   bool applyFilter_;
   edm::InputTag genParticlesLabel_;
   edm::InputTag genJetsLabel_;
+  int type_;
 
   //TTree* tree;
   /*
@@ -65,8 +66,13 @@ private:
   TH1F* h_multiplicity_bQuarks20DILVISTTBB;
 
   TH1F* h_multiplicity_bGenJets20;
+  TH1F* h_multiplicity_bGenJets40;
+
   TH1F* h_multiplicity_bGenJets20DILVIS;
   TH1F* h_multiplicity_bGenJets20DILVISTTBB;
+
+  TH1F* h_multiplicity_addbGenJets20;
+  TH1F* h_multiplicity_addbGenJets40;
 
   TH1F* h_multiplicity_GenJets;
   TH1F* h_multiplicity_GenJets10;
@@ -107,6 +113,9 @@ private:
   TH1F* h_nEvents_40GeV;
   TH1F* h_nEvents_parton;
 
+  TH1F* h_nEvents_addjets;
+  TH1F* h_nEvents_40GeV_addjets;
+
   TH1F* h_nEvents_inclusive;
   TH1F* h_nEvents_parton_inclusive;
 
@@ -119,6 +128,7 @@ CMGTTbar2bGenFilter::CMGTTbar2bGenFilter(const edm::ParameterSet& pset)
   applyFilter_= pset.getUntrackedParameter<bool>("applyFilter",false);
   genParticlesLabel_= pset.getParameter<edm::InputTag>("genParticlesLabel");
   genJetsLabel_= pset.getParameter<edm::InputTag>("genJetsLabel");
+  type_ = pset.getUntrackedParameter<int>("type",0);
 
   edm::Service<TFileService> fs;
   //tree = fs->make<TTree>("tree", "Tree for Top quark study");
@@ -145,8 +155,12 @@ CMGTTbar2bGenFilter::CMGTTbar2bGenFilter(const edm::ParameterSet& pset)
   h_multiplicity_bQuarks20DILVISTTBB  = fs->make<TH1F>( "h_multiplicity_bQuarks20DILVISTTBB"  , "Multiplicity", 10,  0, 10 );
 
   h_multiplicity_bGenJets20  = fs->make<TH1F>( "h_multiplicity_bGenJets20"  , "Multiplicity", 10,  0, 10 );
+  h_multiplicity_bGenJets40  = fs->make<TH1F>( "h_multiplicity_bGenJets40"  , "Multiplicity", 10,  0, 10 );
   h_multiplicity_bGenJets20DILVIS  = fs->make<TH1F>( "h_multiplicity_bGenJets20DILVIS"  , "Multiplicity", 10,  0, 10 );
   h_multiplicity_bGenJets20DILVISTTBB  = fs->make<TH1F>( "h_multiplicity_bGenJets20DILVISTTBB"  , "Multiplicity", 10,  0, 10 );
+
+  h_multiplicity_addbGenJets20  = fs->make<TH1F>( "h_multiplicity_addbGenJets20"  , "Multiplicity", 10,  0, 10 );
+  h_multiplicity_addbGenJets40  = fs->make<TH1F>( "h_multiplicity_addbGenJets40"  , "Multiplicity", 10,  0, 10 );
 
   h_multiplicity_GenJets  = fs->make<TH1F>( "h_multiplicity_GenJets"  , "Multiplicity", 30,  0, 30 );
   h_multiplicity_GenJets10  = fs->make<TH1F>( "h_multiplicity_GenJets10"  , "Multiplicity", 12,  0, 12 );
@@ -183,9 +197,12 @@ CMGTTbar2bGenFilter::CMGTTbar2bGenFilter(const edm::ParameterSet& pset)
   h_multiplicity_GenJets25DILVISTTCC  = fs->make<TH1F>( "h_multiplicity_GenJets25DILVISTTCC"  , "Multiplicity", 12,  0, 12 );
   h_multiplicity_GenJets30DILVISTTCC  = fs->make<TH1F>( "h_multiplicity_GenJets30DILVISTTCC"  , "Multiplicity", 12,  0, 12 );
 
-  h_nEvents = fs->make<TH1F>( "h_nEvents"  , "h_nEvents", 6,  0, 6 );
-  h_nEvents_40GeV = fs->make<TH1F>( "h_nEvents_40GeV"  , "h_nEvents_40GeV", 6,  0, 6 );
+  h_nEvents = fs->make<TH1F>( "h_nEvents"  , "h_nEvents", 7,  0, 7 );
+  h_nEvents_40GeV = fs->make<TH1F>( "h_nEvents_40GeV"  , "h_nEvents_40GeV", 7,  0, 7 );
   h_nEvents_parton = fs->make<TH1F>( "h_nEvents_parton"  , "h_nEvents_parton", 6,  0, 6 );
+
+  h_nEvents_addjets = fs->make<TH1F>( "h_nEvents_addjets"  , "h_nEvents_addjets", 7,  0, 7 );
+  h_nEvents_40GeV_addjets = fs->make<TH1F>( "h_nEvents_40GeV_addjets"  , "h_nEvents_40GeV_addjets", 7,  0, 7 );
 
   h_nEvents_inclusive = fs->make<TH1F>( "h_nEvents_inclusive"  , "h_nEvents", 6,  0, 6 );
   h_nEvents_parton_inclusive = fs->make<TH1F>( "h_nEvents_parton_inclusive"  , "h_nEvents_parton", 6,  0, 6 );
@@ -276,17 +293,29 @@ bool CMGTTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& even
     ttbarGen->push_back(ttbarGenLevel);
 
     bool dil = ttbarGenLevel.diLeptonic() == 1 ;
-    bool vis = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 && ttbarGenLevel.NbJets20() >= 2;
-    bool nbjets2 = ttbarGenLevel.NbJets20() >= 2;
+    bool divis = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 ;
+    bool vis = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 && ttbarGenLevel.NbJets20(type_) >= 2;
+    bool nbjets2 = ttbarGenLevel.NbJets20(type_) >= 2;
+    bool ttb = ttbarGenLevel.NbJets20(type_) == 3;
     bool njets4 = ttbarGenLevel.NJets20() >= 4;
-    bool ttbb = ttbarGenLevel.NbJets20() >= 4;
-    bool ttcc = ttbarGenLevel.NcJets20() >= 2;
+    bool ttbb = ttbarGenLevel.NbJets20(type_) >= 4;
+    bool ttcc = ttbarGenLevel.NcJets20(type_) >= 2;
 
-    bool vis_40GeV = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 && ttbarGenLevel.NbJets40() >= 2;
-    bool nbjets2_40GeV = ttbarGenLevel.NbJets40() >= 2;
+    bool addvis = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 && ttbarGenLevel.NaddJets20() >= 2;
+    bool addttb = ttbarGenLevel.NaddbJets20(type_) == 1;
+    bool addttbb = ttbarGenLevel.NaddbJets20(type_) >= 2;
+ 
+    bool vis_40GeV = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 && ttbarGenLevel.NbJets40(type_) >= 2;
+    bool divis_40GeV = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4;
+    bool nbjets2_40GeV = ttbarGenLevel.NbJets40(type_) >= 2;
+    bool ttb_40GeV = ttbarGenLevel.NbJets40(type_) == 3;
     bool njets4_40GeV = ttbarGenLevel.NJets40() >= 4;
-    bool ttbb_40GeV = ttbarGenLevel.NbJets40() >= 4;
-    bool ttcc_40GeV = ttbarGenLevel.NcJets40() >= 2;
+    bool ttbb_40GeV = ttbarGenLevel.NbJets40(type_) >= 4;
+    bool ttcc_40GeV = ttbarGenLevel.NcJets40(type_) >= 2;
+
+    bool addvis_40GeV = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 && ttbarGenLevel.NaddJets40() >= 2;
+    bool addttb_40GeV = ttbarGenLevel.NaddbJets40(type_) == 1;
+    bool addttbb_40GeV = ttbarGenLevel.NaddbJets40(type_) >= 2;
 
     bool nbpartons2 = ttbarGenLevel.NbQuarks20() >= 2;
     bool vis_parton = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 && ttbarGenLevel.NbQuarks20() >= 2;
@@ -296,24 +325,45 @@ bool CMGTTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& even
     h_multiplicity_bQuarks20->Fill( ttbarGenLevel.NbQuarks20() ) ;
     if( dil && vis ) h_multiplicity_bQuarks20DILVIS->Fill( ttbarGenLevel.NbQuarks20() );
     if( dil && vis && ttbb) h_multiplicity_bQuarks20DILVISTTBB->Fill( ttbarGenLevel.NbQuarks20() );
-    h_multiplicity_bGenJets->Fill( ttbarGenLevel.NbJets() );
-    h_multiplicity_bGenJets20->Fill( ttbarGenLevel.NbJets20() );
-    if( dil && vis ) h_multiplicity_bGenJets20DILVIS->Fill( ttbarGenLevel.NbJets20() );
-    if( dil && vis && ttbb ) h_multiplicity_bGenJets20DILVISTTBB->Fill( ttbarGenLevel.NbJets20() );
+    h_multiplicity_bGenJets->Fill( ttbarGenLevel.NbJets(type_) );
+    h_multiplicity_bGenJets20->Fill( ttbarGenLevel.NbJets20(type_) );
+    h_multiplicity_bGenJets40->Fill( ttbarGenLevel.NbJets40(type_) );
+    if( dil && vis ) h_multiplicity_bGenJets20DILVIS->Fill( ttbarGenLevel.NbJets20(type_) );
+    if( dil && vis && ttbb ) h_multiplicity_bGenJets20DILVISTTBB->Fill( ttbarGenLevel.NbJets20(type_) );
+    h_multiplicity_addbGenJets20->Fill( ttbarGenLevel.NaddbJets20(type_) );
+    h_multiplicity_addbGenJets40->Fill( ttbarGenLevel.NaddbJets40(type_) );
 
     h_nEvents->Fill(0);
     if( dil ) h_nEvents->Fill(1);
     if( dil && vis ) h_nEvents->Fill(2);
     if( dil && vis && njets4  ) h_nEvents->Fill(3);
     if( dil && vis && njets4 && ttbb  ) h_nEvents->Fill(4);
-    if( dil && vis && njets4 && !ttbb && ttcc  ) h_nEvents->Fill(5);
+    if( dil && vis && njets4 && !ttbb && ttb  ) h_nEvents->Fill(5);
+    if( dil && vis && njets4 && !ttbb && !ttb && ttcc  ) h_nEvents->Fill(6);
+
+    h_nEvents_addjets->Fill(0);
+    if( dil ) h_nEvents_addjets->Fill(1);
+    if( dil && divis ) h_nEvents_addjets->Fill(2);
+    if( dil && addvis  ) h_nEvents_addjets->Fill(3);
+    if( dil && addvis && addttbb ) h_nEvents_addjets->Fill(4);
+    if( dil && addvis && !addttbb && addttb ) h_nEvents_addjets->Fill(5);
+    if( dil && addvis && !addttbb && !addttb && ttcc ) h_nEvents_addjets->Fill(6);
 
     h_nEvents_40GeV->Fill(0);
     if( dil ) h_nEvents_40GeV->Fill(1);
     if( dil && vis_40GeV ) h_nEvents_40GeV->Fill(2);
     if( dil && vis_40GeV && njets4_40GeV  ) h_nEvents_40GeV->Fill(3);
     if( dil && vis_40GeV && njets4_40GeV && ttbb_40GeV  ) h_nEvents_40GeV->Fill(4);
-    if( dil && vis_40GeV && njets4_40GeV && !ttbb_40GeV && ttcc_40GeV  ) h_nEvents_40GeV->Fill(5);
+    if( dil && vis_40GeV && njets4_40GeV && !ttbb_40GeV && ttb_40GeV  ) h_nEvents_40GeV->Fill(5);
+    if( dil && vis_40GeV && njets4_40GeV && !ttbb_40GeV && !ttb_40GeV && ttcc_40GeV  ) h_nEvents_40GeV->Fill(6);
+
+    h_nEvents_40GeV_addjets->Fill(0);
+    if( dil ) h_nEvents_40GeV_addjets->Fill(1);
+    if( dil && divis_40GeV ) h_nEvents_40GeV_addjets->Fill(2);
+    if( dil && addvis_40GeV  ) h_nEvents_40GeV_addjets->Fill(3);
+    if( dil && addvis_40GeV && addttbb_40GeV ) h_nEvents_40GeV_addjets->Fill(4);
+    if( dil && addvis_40GeV && !addttbb_40GeV && addttb_40GeV ) h_nEvents_40GeV_addjets->Fill(5);
+    if( dil && addvis_40GeV && !addttbb_40GeV && !addttb_40GeV && ttcc_40GeV ) h_nEvents_40GeV_addjets->Fill(6);
  
     if( njets4 && nbjets2 ) h_nEvents_inclusive->Fill(0);
     if( njets4 && nbjets2 && ttbb  ) h_nEvents_inclusive->Fill(1);
@@ -391,7 +441,7 @@ bool CMGTTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& even
   //b_from_top_multi->Fill(nb_from_top);
   //b_from_nontop_multi->Fill(nb_from_nontop);
 
-  if( ttbarGenLevel.NbJets20() >= 4 ) accepted = true;
+  if( ttbarGenLevel.NbJets20(type_) >= 4 ) accepted = true;
 
   //tree->Fill();
 
