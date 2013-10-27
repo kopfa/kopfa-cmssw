@@ -20,7 +20,7 @@
 <use   name="AnalysisDataFormats/CMGTools"/>
 <use   name="PhysicsTools/KinFitter"/>
 <use   name="AnalysisDataFormats/TopObjects"/>
-<use   name="EGamma/EGammaAnalysisTools"/>
+<use   name="EgammaAnalysis/ElectronTools"/>
 <use   name="rootrflx"/>
 <use   name="rootminuit"/>
 <use   name="rootminuit2"/>

@@ -30,19 +30,20 @@ runOn2012 = True
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012CElEl_cff")
 #MC
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.patTuple_TTbarTuneZ2_cff")
-process.load("KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.patTuple_TTbarFullLepMGDecays_cff")
+#process.load("KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.patTuple_TTbarFullLepMGDecays_cff")
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_TTH_HToBB_M125_cff")
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.cmgTuple_TTbarTuneZ2_cff")
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_ZJets_cff")
 
 
-#process.source = cms.Source("PoolSource",
-#  fileNames = cms.untracked.vstring(
+process.source = cms.Source("PoolSource",
+  fileNames = cms.untracked.vstring(
     #pickRelValInputFiles() # <-- picks automatically RelVal input files for the current release
     #'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/MuEl/MC/20110603/DYmm20to50/patTuple_skim_1_1_ogh.root',
 #    '/store/caf/user/tjkim/mc/Summer12_DR53X/TTJets_FullLeptMGDecays_8TeV-madgraph/CMG/cmgTuple.root'
-#  )
-#)
+    'file:cmgTuple.root'
+  )
+)
 
 from CMGTools.Common.Tools.applyJSON_cff import applyJSON
 json = 'Cert_8TeV_Run2012ABCD_Golden_JSON.txt'

@@ -72,7 +72,7 @@
 #include "TTree.h"
 #include "TH1.h"
 #include "TLorentzVector.h"
-#include "EGamma/EGammaAnalysisTools/interface/ElectronEffectiveArea.h"
+#include "EgammaAnalysis/ElectronTools/interface/ElectronEffectiveArea.h"
 
 
 //
