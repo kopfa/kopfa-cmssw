@@ -179,6 +179,9 @@ namespace vallot{
     int NJets30() const { return NJets30_ ;}
     int NJets40() const { return NJets40_ ;}
 
+    int NaddJets20() const { return NaddJets20_ ;}
+    int NaddJets40() const { return NaddJets40_ ;}
+
     int is2tops() const { return is2tops_; }
 
   private:
@@ -286,6 +289,9 @@ namespace vallot{
     int NJets30_;
     int NJets40_;
 
+    int NaddJets20_;
+    int NaddJets40_;
+ 
   };
 
 }

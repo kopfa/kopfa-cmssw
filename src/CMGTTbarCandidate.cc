@@ -330,6 +330,9 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
   NJets30_ = 0;
   NJets40_ = 0;
 
+  NaddJets20_ = 0;
+  NaddJets40_ = 0;
+
   for (std::vector<cmg::GenJet>::const_iterator genJet=genJets->begin();genJet!=genJets->end();++genJet, ++idx){
     const reco::Candidate& gJet = *genJet;
 
@@ -367,6 +370,17 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
     if( gJet.pt() > 30 && fabs(gJet.eta()) < 2.5 ) NJets30_++;
     if( gJet.pt() > 20 && fabs(gJet.eta()) < 2.5 ) NJets20_++;
     if( gJet.pt() > 10 && fabs(gJet.eta()) < 2.5 ) NJets10_++;
+
+    double minDRtop = 999;
+    for(unsigned int i=0 ; i < bquarksfromtop.size() ; i++){
+      double dR = reco::deltaR(gJet.eta(), gJet.phi(), bquarksfromtop[i].eta(), bquarksfromtop[i].phi());
+      if( dR < minDRtop ) minDRtop = dR;
+    }
+
+    if( minDRtop > 0.5 ){
+      if( gJet.pt() > 40 && fabs(gJet.eta()) < 2.5 ) NaddJets40_++;
+      if( gJet.pt() > 20 && fabs(gJet.eta()) < 2.5 ) NaddJets20_++;
+    }
 
     bool isPAT = genJet->sourcePtr()->isAvailable(); 
     bool istopdecay = false;
