@@ -158,7 +158,7 @@ if runOnFastSim :
 ## Parton level jet reconstruction 
 ########################################################
 
-process.load("KoPFA.CommonTools.genForPartonicFinalState_cff")
+process.load("CMGTools.Common.generator.genForPartonicFinalState_cff")
 process.p += process.genForPartonicFinalStateNoNu
 
 ########################################################
