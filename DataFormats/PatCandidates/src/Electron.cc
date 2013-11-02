@@ -1,5 +1,5 @@
 //
-// $Id: Electron.cc,v 1.29 2012/04/14 02:06:06 tjkim Exp $
+// $Id: Electron.cc,v 1.33 2012/10/04 11:00:10 beaudett Exp $
 //
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
@@ -16,11 +16,23 @@ Electron::Electron() :
     embeddedGsfTrack_(false),
     embeddedSuperCluster_(false),
     embeddedTrack_(false),
+    embeddedSeedCluster_(false),
+    embeddedRecHits_(false),
     embeddedPFCandidate_(false),
     ecalDrivenMomentum_(Candidate::LorentzVector(0.,0.,0.,0.)),
     cachedDB_(false),
     dB_(0.0),
-    edB_(0.0)
+    edB_(0.0),   
+    ecalRegressionEnergy_(0.0),
+    ecalTrackRegressionEnergy_(0.0),
+    ecalRegressionError_(0.0),
+    ecalTrackRegressionError_(0.0),
+    ecalScale_(-99999.),
+    ecalSmear_(-99999.),
+    ecalRegressionScale_(-99999.),
+    ecalRegressionSmear_(-99999.),
+    ecalTrackRegressionScale_(-99999.),
+    ecalTrackRegressionSmear_(-99999.)
 {
   initImpactParameters();
 }
@@ -32,6 +44,8 @@ Electron::Electron(const reco::GsfElectron & anElectron) :
     embeddedGsfTrack_(false),
     embeddedSuperCluster_(false),
     embeddedTrack_(false),
+    embeddedSeedCluster_(false),
+    embeddedRecHits_(false),
     embeddedPFCandidate_(false),
     ecalDrivenMomentum_(anElectron.p4()),
     cachedDB_(false),
@@ -47,7 +61,9 @@ Electron::Electron(const edm::RefToBase<reco::GsfElectron> & anElectronRef) :
     embeddedGsfElectronCore_(false),
     embeddedGsfTrack_(false),
     embeddedSuperCluster_(false),
-    embeddedTrack_(false),
+    embeddedTrack_(false), 
+    embeddedSeedCluster_(false),
+    embeddedRecHits_(false),
     embeddedPFCandidate_(false),
     ecalDrivenMomentum_(anElectronRef->p4()),
     cachedDB_(false),
@@ -64,6 +80,8 @@ Electron::Electron(const edm::Ptr<reco::GsfElectron> & anElectronRef) :
     embeddedGsfTrack_(false),
     embeddedSuperCluster_(false),
     embeddedTrack_(false),
+    embeddedSeedCluster_(false),
+    embeddedRecHits_(false),
     embeddedPFCandidate_(false),
     ecalDrivenMomentum_(anElectronRef->p4()),
     cachedDB_(false),
@@ -133,6 +151,15 @@ reco::SuperClusterRef Electron::superCluster() const {
   }
 }
 
+/// direct access to the seed cluster
+reco::CaloClusterPtr Electron::seed() const {
+  if(embeddedSeedCluster_){
+    return reco::CaloClusterPtr(&seedCluster_,0);
+  } else {
+    return reco::GsfElectron::superCluster()->seed();
+  }
+}
+
 /// override the reco::GsfElectron::closestCtfTrack method, to access the internal storage of the track
 reco::TrackRef Electron::closestCtfTrackRef() const {
   if (embeddedTrack_) {
@@ -175,12 +202,30 @@ void Electron::embedSuperCluster() {
   }
 }
 
+/// Stores the electron's SeedCluster (reco::BasicClusterPtr) internally
+void Electron::embedSeedCluster() {
+  seedCluster_.clear();
+  if (reco::GsfElectron::superCluster().isNonnull() && reco::GsfElectron::superCluster()->seed().isNonnull()) {
+    seedCluster_.push_back(*reco::GsfElectron::superCluster()->seed());
+    embeddedSeedCluster_ = true;
+  }
+}
+
+
 /// method to store the electron's track internally
 void Electron::embedTrack() {
   track_.clear();
   if (reco::GsfElectron::closestCtfTrackRef().isNonnull()) {
       track_.push_back(*reco::GsfElectron::closestCtfTrackRef());
       embeddedTrack_ = true;
+  }
+}
+
+// method to store the RecHits internally
+void Electron::embedRecHits(const EcalRecHitCollection * rechits) {
+  if (rechits!=0) {
+    recHits_ = *rechits;
+    embeddedRecHits_ = true;
   }
 }
 

@@ -71,7 +71,7 @@ PFAlgo::~PFAlgo() {
 }
 
 
-void 
+void
 PFAlgo::setParameters(double nSigmaECAL,
                       double nSigmaHCAL, 
                       const boost::shared_ptr<PFEnergyCalibration>& calibration,
@@ -163,7 +163,6 @@ PFAlgo::setPFPhotonParameters(bool usePFPhotons,
 
   //for MVA pass PV if there is one in the collection otherwise pass a dummy    
   reco::Vertex dummy;  
-  const reco::Vertex* pv=&dummy;  
   if(useVertices_)  
     {  
       dummy = primaryVertex_;  
@@ -176,7 +175,7 @@ PFAlgo::setPFPhotonParameters(bool usePFPhotons,
     reco::Vertex::Point p(0, 0, 0);  
     dummy = reco::Vertex(p, e, 0, 0, 0);  
   }  
-   
+  // pv=&dummy;  
   if(! usePFPhotons_) return;  
   FILE * filePhotonConvID = fopen(mvaWeightFileConvID.c_str(), "r");  
   if (filePhotonConvID) {  
@@ -188,8 +187,7 @@ PFAlgo::setPFPhotonParameters(bool usePFPhotons,
     err += "'";  
     throw invalid_argument( err );  
   }  
-   
-  
+  const reco::Vertex* pv=&dummy;  
   pfpho_ = new PFPhotonAlgo(mvaWeightFileConvID, 
 			    mvaConvCut, 
 			    useReg,
@@ -285,8 +283,9 @@ PFAlgo::setPFVertexParameters(bool useVertex,
   //Now find the primary vertex!
   bool primaryVertexFound = false;
   int nVtx=primaryVertices.size();
-  if(usePFPhotons_)pfpho_->setnPU(nVtx);
-  
+  if(usePFPhotons_){
+    pfpho_->setnPU(nVtx);
+  }
   for (unsigned short i=0 ;i<primaryVertices.size();++i)
     {
       if(primaryVertices[i].isValid()&&(!primaryVertices[i].isFake()))
@@ -298,7 +297,21 @@ PFAlgo::setPFVertexParameters(bool useVertex,
     }
   //Use vertices if the user wants to but only if it exists a good vertex 
   useVertices_ = useVertex && primaryVertexFound; 
-
+  if(usePFPhotons_) {
+    if (useVertices_ ){
+      pfpho_->setPhotonPrimaryVtx(primaryVertex_ );
+    }
+    else{
+      reco::Vertex::Error e;  
+      e(0, 0) = 0.0015 * 0.0015;  
+      e(1, 1) = 0.0015 * 0.0015;  
+      e(2, 2) = 15. * 15.;  
+      reco::Vertex::Point p(0, 0, 0);  
+      reco::Vertex dummy = reco::Vertex(p, e, 0, 0, 0); 
+      //      std::cout << " PFPho " << pfpho_ << std::endl;
+      pfpho_->setPhotonPrimaryVtx(dummy);
+    }
+  }
 }
 
 
