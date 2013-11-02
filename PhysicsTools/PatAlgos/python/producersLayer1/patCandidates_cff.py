@@ -8,6 +8,7 @@ from PhysicsTools.PatAlgos.producersLayer1.photonProducer_cff import *
 from PhysicsTools.PatAlgos.producersLayer1.jetProducer_cff import *
 from PhysicsTools.PatAlgos.producersLayer1.metProducer_cff import *
 from PhysicsTools.PatAlgos.producersLayer1.mhtProducer_cff import *
+from PhysicsTools.PatAlgos.producersLayer1.PATJets_cff import *
 
 # One module to count objects
 patCandidateSummary = cms.EDAnalyzer("CandidateSummaryTable",
@@ -25,11 +26,12 @@ patCandidateSummary = cms.EDAnalyzer("CandidateSummaryTable",
 
 patCandidates = cms.Sequence(
     makePatElectrons +
-    makePatMuons     +
-    makePatTaus      +
-    makePatPhotons   +
-    makePatJets      +
-    makePatMETs      +
+#    makePatMuons     +
+#    makePatTaus      +
+#    makePatPhotons   +
+    PATJetSequence   +
+#    makePatJets      +
+#    makePatMETs      +
 #   makePatMHTs      +    
     patCandidateSummary
 )

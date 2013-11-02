@@ -22,7 +22,7 @@ cleanPatCandidateSummary = cms.EDAnalyzer("CandidateSummaryTable",
 
 
 cleanPatCandidates = cms.Sequence(
-    cleanPatMuons     *        # NOW WE MUST USE '*' AS THE ORDER MATTERS
+#    cleanPatMuons     *        # NOW WE MUST USE '*' AS THE ORDER MATTERS
     cleanPatElectrons *
     cleanPatPhotons   *
     cleanPatTaus      *

@@ -9,7 +9,7 @@ from PhysicsTools.PatAlgos.selectionLayer1.leptonCountFilter_cfi import *
 
 countPatCandidates = cms.Sequence(
     countPatElectrons +
-    countPatMuons     +
+#    countPatMuons     +
     countPatTaus      +
     countPatLeptons   +
     countPatPhotons   +

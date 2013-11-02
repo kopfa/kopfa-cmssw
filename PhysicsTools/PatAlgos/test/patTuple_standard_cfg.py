@@ -30,8 +30,18 @@ process.p = cms.Path(
 #
 #   process.GlobalTag.globaltag =  ...    ##  (according to https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideFrontierConditions)
 #                                         ##
-from PhysicsTools.PatAlgos.patInputFiles_cff import filesRelValProdTTbarAODSIM
-process.source.fileNames = filesRelValProdTTbarAODSIM
+#from PhysicsTools.PatAlgos.patInputFiles_cff import filesRelValProdTTbarAODSIM
+#process.source.fileNames = filesRelValProdTTbarAODSIM
+from CMGTools.Production.datasetToSource import *
+## This is used to get the correct global tag below, and to find the files
+## It is *reset* automatically by ProductionTasks, so you can use it after the ProductionTasksHook
+#datasetInfo = ('cmgtools_group', '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B','.*root')
+datasetInfo = ('cmgtools_group', '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B','.*root')
+process.source = datasetToSource(
+    *datasetInfo
+    )
+
+process.source.fileNames = process.source.fileNames[:20]
 #                                         ##
 process.maxEvents.input = 100
 #                                         ##
