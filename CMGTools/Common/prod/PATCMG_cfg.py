@@ -102,6 +102,10 @@ process.puJetIdCHS.jec = jecPayload
 process.cmgPUJetMvaCHS.jec = jecPayload
 process.selectedPatJetsCHS.cut = 'pt()>10'
 
+### ###
+## skim
+#######
+process.load("CMGTools.Common.skims.patLeptonFilter_cfi")
 
 ########################################################
 ## Path definition
@@ -113,6 +117,7 @@ process.load('CMGTools.Common.PAT.addFilterPaths_cff')
 process.p = cms.Path(
     process.prePathCounter + 
     process.PATCMGSequence +
+    process.patLeptonFilter + # event skim requiring at least one lepton 
     process.PATCMGJetCHSSequence 
     )
 

@@ -7,7 +7,7 @@ import FWCore.ParameterSet.Config as cms
 cmgElectronCount = cms.EDFilter(
     "CandViewCountFilter",
     src = cms.InputTag("cmgElectronSel"),
-    minNumber = cms.uint32(0),
+    minNumber = cms.uint32(1),
     )
 
 
