@@ -17,19 +17,22 @@ patObjects = cms.untracked.vstring(
     'drop patMuons_*AK5NoPUSub_*_*',    
     #COLIN : the following should be in traditional_cff
     'keep edmMergeableCounter_*_*_*',
-    'keep cmgPhotons_selectedPat*_*_*',
+    'drop cmgPhotons_selectedPat*_*_*',
     'keep recoVertexs_offlinePrimaryVertices_*_*',
-    'keep recoPFMETs_pfMetForRegression__*',
-    'keep double_*_rho_*',
-    'keep *_nJetsPtGt1_*_*',
-    'keep recoPFMETs_nopuMet__*',
-    'keep recoPFMETs_puMet__*',
-    'keep recoPFMETs_pcMet__*',    
-    'keep recoPFMETs_tkMet__*',
-    'keep recoCaloMETs_*_*_*',
-    'keep *_ak5SoftTrackJetsForVbfHbb__*'
+    'drop recoPFMETs_pfMetForRegression__*',
+    #'keep double_*_rho_*',
+    'keep double_ak5PFJets_rho_RECO',
+    'keep double_kt6PFJets_rho_RECO',
+    'drop *_nJetsPtGt1_*_*',
+    'drop recoPFMETs_nopuMet__*',
+    'drop recoPFMETs_puMet__*',
+    'drop recoPFMETs_pcMet__*',    
+    'drop recoPFMETs_tkMet__*',
+    'drop recoCaloMETs_*_*_*',
+    'drop *_ak5SoftTrackJetsForVbfHbb__*'
     )
 
-everything = particleFlow + traditional + patObjects + runInfoAccounting + trigger + gen + eventCleaning
+#everything = particleFlow + traditional + patObjects + runInfoAccounting + trigger + gen + eventCleaning
+everything = particleFlow + patObjects + trigger + gen + eventCleaning
 
 MHT = particleFlowMHT + traditionalMHT

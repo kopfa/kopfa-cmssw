@@ -36,7 +36,7 @@ print process.source.fileNames
 print sep_line 
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(4000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 print 'loading the main CMG sequence'
 
@@ -126,15 +126,15 @@ process.p += process.postPathCounter
 # process.PATCMGSequence.remove(process.PATCMGElectronSequence)
 # process.PATCMGSequence.remove(process.PATCMGGenSequence)
 # process.PATCMGSequence.remove(process.PATCMGJetSequence)
-# process.PATCMGSequence.remove(process.PATCMGTauSequence)
+process.PATCMGSequence.remove(process.PATCMGTauSequence)
 # process.PATCMGSequence.remove(process.PATCMGMetSequence)
 # process.p.remove(process.PATCMGJetCHSSequence)
 # process.p.remove(process.PATCMGTriggerSequence)
 # process.p.remove(process.PATCMGPhotonSequence)
 # process.p.remove(process.PATCMGVertexSequence)
-# process.p.remove(process.PATCMGPhotonSequence)
-# process.p.remove(process.MetSignificanceSequence)
-# process.p.remove(process.PATCMGMetRegressionSequence)
+process.p.remove(process.PATCMGPhotonSequence)
+process.p.remove(process.MetSignificanceSequence)
+process.p.remove(process.PATCMGMetRegressionSequence)
 # process.p.remove(process.PATCMGJetSequenceCHSpruned)
 
 if runOnFastSim :

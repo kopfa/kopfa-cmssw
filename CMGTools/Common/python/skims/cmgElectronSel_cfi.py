@@ -7,7 +7,7 @@ import FWCore.ParameterSet.Config as cms
 cmgElectronSel = cms.EDFilter(
     "CmgElectronSelector",
     src = cms.InputTag("cmgElectron"),
-    cut = cms.string( "pt()>0" )
+    cut = cms.string( "pt()>10" )
     )
 
 
