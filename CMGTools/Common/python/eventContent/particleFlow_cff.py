@@ -2,18 +2,20 @@ import FWCore.ParameterSet.Config as cms
 
 
 particleFlowJets = cms.untracked.vstring(
-    'keep *_cmgPFJetSel*_*_*',
-    'keep *_cmgPFJetLead*_*_*',    
-    'keep *_cmgPFBaseJetLead*_*_*',
-    'keep cmgAbstractPhysicsObjects_*PF*Jet*_*_*',
-    'keep *_cmgPFJet*JetId*Failed_*_*',
+    #'keep *_cmgPFJetSel*_*_*',
+    'keep *_cmgPFJetSelCHS_*_*',
+    'drop *_cmgPFJetLead*_*_*',    
+    'drop *_cmgPFBaseJetLead*_*_*',
+    'drop cmgAbstractPhysicsObjects_*PF*Jet*_*_*',
+    'drop *_cmgPFJet*JetId*Failed_*_*',
     # here add all PF jet objects, even the base ones. 
-    'keep *_cmgStructuredPFJetSel*_*_*',
+    'drop *_cmgStructuredPFJetSel*_*_*',
     )
 
 particleFlowMET = cms.untracked.vstring(
-    'keep  *_cmgPFMET*_*_*',
-    'drop *_cmgPFMETSel*_*_*',
+    #'keep  *_cmgPFMET*_*_*',
+    'keep  *_cmgPFMET_*_*',
+    #'keep *_cmgPFMETSel*_*_*',
     # 'keep  *_cmgMETPFCandidates*_*_*',
     # here add the other PF-based MET objects, even the base ones. 
     )
@@ -26,7 +28,7 @@ particleFlowMHT = cms.untracked.vstring(
 particleFlowMuons = cms.untracked.vstring(
     # does not look like PF?     
     'keep *_cmgMuonSel*_*_*',
-    'keep *_cmgDiMuonSel*_*_*',
+    'drop *_cmgDiMuonSel*_*_*',
     'drop *_cmg*Muon*AK5NoPUSub*_*_*'
     )
 
@@ -38,7 +40,7 @@ particleFlowTaus = cms.untracked.vstring(
 
 particleFlowElectrons = cms.untracked.vstring(
     'keep *_cmgElectronSel*_*_*',
-    'keep *_cmgDiElectronSel*_*_*',
+    'drop *_cmgDiElectronSel*_*_*',
     'drop *_cmg*Electron*AK5NoPUSub*_*_*'
     )
 
@@ -71,7 +73,8 @@ particleFlowMisc = cms.untracked.vstring(
     'keep double_generator_weight_EmbeddedRECO'
     )
 
-particleFlow = particleFlowJets + particleFlowMET + particleFlowMuons + particleFlowTaus + particleFlowElectrons + particleFlowPhotons + particleFlowW + particleFlowHemispheres + particleFlowMisc
+#particleFlow = particleFlowJets + particleFlowMET + particleFlowMuons + particleFlowTaus + particleFlowElectrons + particleFlowPhotons + particleFlowW + particleFlowHemispheres + particleFlowMisc
+particleFlow = particleFlowJets + particleFlowMET + particleFlowMuons + particleFlowElectrons 
 
 
 particleFlowBase = cms.untracked.vstring(

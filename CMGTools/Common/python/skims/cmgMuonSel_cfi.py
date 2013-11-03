@@ -7,7 +7,7 @@ import FWCore.ParameterSet.Config as cms
 cmgMuonSel = cms.EDFilter(
     "CmgMuonSelector",
     src = cms.InputTag( "cmgMuon" ),
-    cut = cms.string( "pt()>0" )
+    cut = cms.string( "pt()>10" )
     )
 
 
