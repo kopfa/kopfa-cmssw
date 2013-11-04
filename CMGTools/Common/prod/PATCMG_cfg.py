@@ -126,11 +126,11 @@ process.p += process.postPathCounter
 # For testing, you can remove some of the objects:
 # NOTE: there are a few dependencies between these sequences
 # process.PATCMGSequence.remove(process.PATCMGPileUpSubtractionSequence)
-# process.PATCMGSequence.remove(process.PATCMGRhoSequence)
+process.PATCMGSequence.remove(process.PATCMGRhoSequence)
 # process.PATCMGSequence.remove(process.PATCMGMuonSequence)
 # process.PATCMGSequence.remove(process.PATCMGElectronSequence)
 # process.PATCMGSequence.remove(process.PATCMGGenSequence)
-# process.PATCMGSequence.remove(process.PATCMGJetSequence)
+process.PATCMGSequence.remove(process.PATCMGJetSequence)
 process.PATCMGSequence.remove(process.PATCMGTauSequence)
 # process.PATCMGSequence.remove(process.PATCMGMetSequence)
 # process.p.remove(process.PATCMGJetCHSSequence)
