@@ -18,6 +18,7 @@
 <use   name="CondFormats/JetMETObjects"/>
 <use   name="JetMETCorrections/Algorithms" />
 <use   name="KoPFA/DataFormats"/>
+<use   name="EGamma/EGammaAnalysisTools"/>
 <flags   EDM_PLUGIN="1"/>
 <export>
   <lib   name="1"/>
