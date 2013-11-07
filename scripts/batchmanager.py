@@ -4,7 +4,7 @@ from datetime import datetime
 from optparse import OptionParser
 
 import sys, string, os, re, pprint, shutil
-
+import KoPFA.CommonTools.eostools as castortools 
 
 class BatchManager:
     """
@@ -53,11 +53,18 @@ class BatchManager:
             print >> sys.stderr, "Please provide me with an output directory (-r option) " \
                   "or ask for help (-h option)"
             sys.exit(1)
-        nsls = 'rfdir %s > /dev/null' % self.remoteOutputDir_
-        dirExist = os.system( nsls )
-        if dirExist != 0: 
-            print 'check that the castor output directory specified with the -r option exists.'
-            sys.exit(1)
+
+        if self.remoteOutputDir_.startswith("/eos"):
+          dirExit = castortools.runEOSCommand(self.remoteOutputDir_,'ls')
+          if not dirExit:
+              print 'check that the castor output directory specified with the -r option exists.'
+              sys.exit(1)
+        else:
+          nsls = 'rfdir %s > /dev/null' % self.remoteOutputDir_
+          dirExist = os.system( nsls )
+          if dirExist != 0: 
+              print 'check that the castor output directory specified with the -r option exists.'
+              sys.exit(1)
 #        self.remoteOutputFile_ = os.path.basename( self.options_.remoteCopy )
         self.remoteOutputFile_ = ""
     

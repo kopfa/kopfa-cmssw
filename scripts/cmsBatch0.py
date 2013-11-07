@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # Colin
+# Modified by Tae Jeong
 # batch mode for cmsRun, March 2009
 
 
@@ -14,7 +15,7 @@ import castortools
 import FWCore.ParameterSet.Config as cms
 from IOMC.RandomEngine.RandomServiceHelper import RandomNumberServiceHelper
 
-
+import KoPFA.CommonTools.eostools as castortools
 
 
 def batchScriptCCIN2P3():
@@ -103,12 +104,18 @@ echo 'sending the job directory back'
 
 
    if remoteDir != '':
+      if remoteDir.startswith("/eos"):
+        remoteDir = remoteDir.replace('/eos/cms','')
+        cmd = "cmsStage"
+      else:
+        cmd = "rfcp"
       script += """
+
 for file in *.root; do
 newFileName=`echo $file | sed -r -e 's/\./_%s\./'`
-rfcp $file %s/$newFileName 
+%s $file %s/$newFileName 
 done
-""" % (index, remoteDir)
+""" % (index, cmd, remoteDir)
           
    script += 'rm *.root\n'
    script += 'cp -rf * $LS_SUBCWD\n'
