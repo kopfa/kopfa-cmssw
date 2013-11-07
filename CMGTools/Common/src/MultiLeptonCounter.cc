@@ -10,11 +10,15 @@
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
+#include "AnalysisDataFormats/CMGTools/interface/Lepton.h"
+#include "AnalysisDataFormats/CMGTools/interface/Muon.h"
+#include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 
 #include <memory>
 
 using namespace edm;
 using namespace std;
+using namespace cmg;
 
 class MultiLeptonCounter : public edm::EDFilter
 {
@@ -28,7 +32,8 @@ private:
   bool filter(edm::Event& event, const edm::EventSetup& eventSetup);
 
   bool applyFilter_;
-  std::vector<edm::InputTag> leptonLabels_;
+  edm::InputTag muonsLabel_;
+  edm::InputTag electronsLabel_;
   unsigned int minCount_, maxCount_;
 };
 
@@ -36,7 +41,8 @@ MultiLeptonCounter::MultiLeptonCounter(const edm::ParameterSet& pset)
 {
   applyFilter_ = pset.getUntrackedParameter<bool>("applyFilter", true);
 
-  leptonLabels_ = pset.getUntrackedParameter<std::vector<edm::InputTag> >("leptons");
+  muonsLabel_ = pset.getUntrackedParameter<edm::InputTag>("muonsLabel");
+  electronsLabel_ = pset.getUntrackedParameter<edm::InputTag>("electronsLabel");
   minCount_ = pset.getUntrackedParameter<unsigned int>("minCount", 1);
   maxCount_ = pset.getUntrackedParameter<unsigned int>("maxCount", 999);
   
@@ -48,17 +54,14 @@ bool MultiLeptonCounter::filter(edm::Event& event, const edm::EventSetup& eventS
 
   unsigned int nCount = 0;
 
-  for ( std::vector<edm::InputTag>::const_iterator leptonLabel = leptonLabels_.begin();
-        leptonLabel != leptonLabels_.end(); ++leptonLabel )
-  {
-    edm::Handle<edm::View<reco::Candidate> > leptonHandle;
-    event.getByLabel(*leptonLabel, leptonHandle);
+  edm::Handle<vector<cmg::Muon> > muons_;
+  edm::Handle<vector<cmg::Electron> > electrons_;
+  event.getByLabel(muonsLabel_, muons_);
+  event.getByLabel(electronsLabel_, electrons_);
 
-    if ( !leptonHandle.isValid() ) continue;
+  if ( muons_.isValid() ) nCount += muons_->size();
+  if ( electrons_.isValid() ) nCount += electrons_->size();
 
-    nCount += leptonHandle->size();
-  }
-  
   return nCount >= minCount_ && nCount <= maxCount_;
 }
 

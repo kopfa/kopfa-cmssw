@@ -103,7 +103,7 @@ patElectrons.electronIDSources  = electronIDs.clone()
 
 patElectrons.embedTrack = True
 
-selectedPatElectrons.cut = 'isPF() && pt()>15 && abs(eta())<3.0'
+selectedPatElectrons.cut = 'isPF() && pt()>20 && abs(eta())<2.5 && passConversionVeto()'
 
 from CMGTools.Common.PAT.patElectronsWithTrigger_cff import * 
 from CMGTools.Common.PAT.patElectronsWithMVA_cfi import * 

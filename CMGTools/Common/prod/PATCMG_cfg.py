@@ -20,12 +20,13 @@ from CMGTools.Production.datasetToSource import *
 ## This is used to get the correct global tag below, and to find the files
 ## It is *reset* automatically by ProductionTasks, so you can use it after the ProductionTasksHook
 #datasetInfo = ('cmgtools_group', '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B','.*root')
-datasetInfo = ('cmgtools_group', '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B','.*root')
+#datasetInfo = ('cmgtools_group', '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B','.*root')
+datasetInfo = ('cmgtools_group', '/TTJets_FullLeptMGDecays_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v2/AODSIM//V5_B','.*root')
 process.source = datasetToSource(
     *datasetInfo
     )
 
-process.source.fileNames = process.source.fileNames[:20]
+process.source.fileNames = process.source.fileNames[:-1]
 
 
 ###ProductionTaskHook$$$
@@ -36,7 +37,7 @@ print process.source.fileNames
 print sep_line 
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 print 'loading the main CMG sequence'
 
@@ -105,7 +106,8 @@ process.selectedPatJetsCHS.cut = 'pt()>10'
 ### ###
 ## skim
 #######
-process.load("CMGTools.Common.skims.patLeptonFilter_cfi")
+process.load("CMGTools.Common.skims.cmgLeptonFilter_cfi")
+process.load("CMGTools.Common.skims.HLTFilter_cff")
 
 ########################################################
 ## Path definition
@@ -116,8 +118,9 @@ process.dump = cms.EDAnalyzer('EventContentAnalyzer')
 process.load('CMGTools.Common.PAT.addFilterPaths_cff')
 process.p = cms.Path(
     process.prePathCounter + 
+    process.hltHighLevelFilter+
     process.PATCMGSequence +
-    process.patLeptonFilter + # event skim requiring at least one lepton 
+    process.cmgLeptonFilter + # event skim requiring at least one lepton 
     process.PATCMGJetCHSSequence 
     )
 
@@ -135,12 +138,12 @@ process.PATCMGSequence.remove(process.PATCMGTauSequence)
 # process.PATCMGSequence.remove(process.PATCMGMetSequence)
 # process.p.remove(process.PATCMGJetCHSSequence)
 # process.p.remove(process.PATCMGTriggerSequence)
-# process.p.remove(process.PATCMGPhotonSequence)
+process.p.remove(process.PATCMGPhotonSequence)
 # process.p.remove(process.PATCMGVertexSequence)
 process.p.remove(process.PATCMGPhotonSequence)
 process.p.remove(process.MetSignificanceSequence)
 process.p.remove(process.PATCMGMetRegressionSequence)
-# process.p.remove(process.PATCMGJetSequenceCHSpruned)
+process.p.remove(process.PATCMGJetSequenceCHSpruned)
 
 if runOnFastSim :
     process.vertexWeightSequence.remove(process.vertexWeight3DMay10ReReco)
@@ -183,14 +186,11 @@ process.out = cms.OutputModule("PoolOutputModule",
 # needed to override the CMG format, which drops the pat taus
 process.out.outputCommands.append('keep patTaus_selectedPatTaus_*_*')
 
-# needed to save the new parton level jet in output
-process.out.outputCommands.append('keep recoGenJets_ak5GenJetsPartonicFinalStateNoNu*_*_*')
-
 #FIXME now keeping the whole event content...
 # process.out.outputCommands.append('keep *_*_*_*')
 
 process.outpath = cms.EndPath(
-    process.out
+#    process.out
     )
 
 ########################################################
@@ -208,7 +208,11 @@ process.outcmg = cms.OutputModule(
 
 process.outpath += process.outcmg
 
-
+# needed to save the new parton level jet in output
+process.outcmg.outputCommands.append('keep recoGenJets_ak5GenJetsPartonicFinalStateNoNu*_*_*')
+process.outcmg.outputCommands.append('keep recoGenJets_ak5GenJetsNoNu_*_*')
+process.outcmg.outputCommands.append('keep recoGenParticles_genParticles_*_*')
+process.outcmg.outputCommands.append('keep recoGenParticles_genParticlesPruned_*_*')
 
 
 ########################################################
