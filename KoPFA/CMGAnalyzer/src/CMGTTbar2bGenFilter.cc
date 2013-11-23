@@ -13,6 +13,7 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "KoPFA/CMGDataFormats/interface/CMGTTbarCandidate.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 #include "TTree.h"
 #include "TFile.h"
@@ -109,6 +110,14 @@ private:
   TH1F* h_multiplicity_GenJets25DILVISTTCC;
   TH1F* h_multiplicity_GenJets30DILVISTTCC;
 
+  TH1F* h_dR_additional_bquarks;
+  TH1F* h_pt_additional_bquarks_1;
+  TH1F* h_eta_additional_bquarks_1;
+  TH1F* h_pt_additional_bquarks_2;
+  TH1F* h_eta_additional_bquarks_2;
+  TH1F* h_dR_additional_bquarks_20GeV;
+  TH1F* h_dR_additional_bquarks_40GeV;
+
   TH1F* h_nEvents;
   TH1F* h_nEvents_40GeV;
   TH1F* h_nEvents_parton;
@@ -149,6 +158,14 @@ CMGTTbar2bGenFilter::CMGTTbar2bGenFilter(const edm::ParameterSet& pset)
 
   h_multiplicity_bQuarks  = fs->make<TH1F>( "h_multiplicity_bQuarks"  , "Multiplicity", 10,  0, 10 );
   h_multiplicity_bGenJets  = fs->make<TH1F>( "h_multiplicity_bGenJets"  , "Multiplicity", 10,  0, 10 );
+
+  h_dR_additional_bquarks = fs->make<TH1F>("h_dR_additional_bquarks", "#Delta R", 500, 0, 5);
+  h_pt_additional_bquarks_1 = fs->make<TH1F>("h_pt_additional_bquarks_1", "p_{T}", 200, 0, 200);
+  h_eta_additional_bquarks_1 = fs->make<TH1F>("h_eta_additional_bquarks_1", "#Eta", 600, -3, 3);
+  h_pt_additional_bquarks_2 = fs->make<TH1F>("h_pt_additional_bquarks_2", "p_{T}", 200, 0, 200);
+  h_eta_additional_bquarks_2 = fs->make<TH1F>("h_eta_additional_bquarks_2", "#Eta", 600, -3, 3);
+  h_dR_additional_bquarks_20GeV = fs->make<TH1F>("h_dR_additional_bquarks_20GeV", "#Delta R", 500, 0, 5);
+  h_dR_additional_bquarks_40GeV = fs->make<TH1F>("h_dR_additional_bquarks_40GeV", "#Delta R", 500, 0, 5);
 
   h_multiplicity_bQuarks20  = fs->make<TH1F>( "h_multiplicity_bQuarks20"  , "Multiplicity", 10,  0, 10 );
   h_multiplicity_bQuarks20DILVIS  = fs->make<TH1F>( "h_multiplicity_bQuarks20DILVIS"  , "Multiplicity", 10,  0, 10 );
@@ -291,6 +308,17 @@ bool CMGTTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& even
     ttbarGenLevel.building(myGenJets, myGenParticles);
 
     ttbarGen->push_back(ttbarGenLevel);
+
+    double dR_addb = deltaR(ttbarGenLevel.bquarks3().eta(), ttbarGenLevel.bquarks3().phi(),ttbarGenLevel.bquarks4().eta(), ttbarGenLevel.bquarks4().phi()); 
+    if( dR_addb > 0 ){
+      h_dR_additional_bquarks->Fill(dR_addb);
+      h_pt_additional_bquarks_1->Fill( ttbarGenLevel.bquarks3().pt() );
+      h_eta_additional_bquarks_1->Fill(ttbarGenLevel.bquarks3().eta() );
+      h_pt_additional_bquarks_2->Fill( ttbarGenLevel.bquarks4().pt() );
+      h_eta_additional_bquarks_2->Fill(ttbarGenLevel.bquarks4().eta() );
+      if( ttbarGenLevel.bquarks3().pt() > 20 && ttbarGenLevel.bquarks3().pt() > 20) h_dR_additional_bquarks_20GeV->Fill(dR_addb); 
+      if( ttbarGenLevel.bquarks3().pt() > 40 && ttbarGenLevel.bquarks3().pt() > 40) h_dR_additional_bquarks_40GeV->Fill(dR_addb); 
+    }
 
     bool dil = ttbarGenLevel.diLeptonic() == 1 ;
     bool divis = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 ;
