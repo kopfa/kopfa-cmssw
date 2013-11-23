@@ -384,10 +384,12 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("nJet50",&nJet50,"nJet50/i");
 
     tree->Branch("nGenJet20",&nGenJet20,"nGenJet20/i");
+    tree->Branch("nGenaddJet20",&nGenaddJet20,"nGenaddJet20/i");
     tree->Branch("nGenbJet20",&nGenbJet20,"nGenbJet20/i");
     tree->Branch("nGenaddbJet20",&nGenaddbJet20,"nGenaddbJet20/i");
     tree->Branch("nGencJet20",&nGencJet20,"nGencJet20/i");
     tree->Branch("nGenJet40",&nGenJet40,"nGenJet40/i");
+    tree->Branch("nGenaddJet40",&nGenaddJet40,"nGenaddJet40/i");
     tree->Branch("nGenbJet40",&nGenbJet40,"nGenbJet40/i");
     tree->Branch("nGenaddbJet40",&nGenaddbJet40,"nGenaddbJet40/i");
     tree->Branch("nGencJet40",&nGencJet40,"nGencJet40/i");
@@ -1027,11 +1029,13 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       ttbarGenLevel.building(myGenJets, myGenParticles);
       genttbarM = ttbarGenLevel.mass();
       nGenJet20 = ttbarGenLevel.NJets20();
+      nGenaddJet20 = ttbarGenLevel.NaddJets20();
       nGenbJet20 = ttbarGenLevel.NbJets20();
       nGenaddbJet20 = ttbarGenLevel.NaddbJets20();
       nGencJet20 = ttbarGenLevel.NcJets20();
 
       nGenJet40 = ttbarGenLevel.NJets40();
+      nGenaddJet40 = ttbarGenLevel.NaddJets40();
       nGenbJet40 = ttbarGenLevel.NbJets40();
       nGenaddbJet40 = ttbarGenLevel.NaddbJets40();
       nGencJet40 = ttbarGenLevel.NcJets40();
@@ -1330,10 +1334,12 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     nJet40 = 0;
     nJet50 = 0;
     nGenJet20 = 0;
+    nGenaddJet20 = 0;
     nGenbJet20 = 0;
     nGenaddbJet20 = 0;
     nGencJet20 = 0;
     nGenJet40 = 0;
+    nGenaddJet40 = 0;
     nGenbJet40 = 0;
     nGenaddbJet40 = 0;
     nGencJet40 = 0;
@@ -1623,10 +1629,12 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   unsigned int nJet50;
 
   unsigned int nGenJet20;
+  unsigned int nGenaddJet20;
   unsigned int nGenbJet20;
   unsigned int nGenaddbJet20;
   unsigned int nGencJet20;
   unsigned int nGenJet40;
+  unsigned int nGenaddJet40;
   unsigned int nGenbJet40;
   unsigned int nGenaddbJet40;
   unsigned int nGencJet40;
