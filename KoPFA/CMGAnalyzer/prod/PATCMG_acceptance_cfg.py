@@ -36,7 +36,7 @@ print process.source.fileNames
 print sep_line 
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 print 'loading the main CMG sequence'
 
@@ -116,21 +116,29 @@ process.TFileService = cms.Service("TFileService",
 process.load("KoPFA.CMGAnalyzer.ttbar2bFilter_cfi")
 
 ########################################################
+## Parton level jet reconstruction 
+########################################################
+
+process.load("CMGTools.Common.generator.genForPartonicFinalState_cff")
+
+genPartonJetFactory = cms.PSet(
+       inputCollection = cms.InputTag("ak5GenJetsPartonicFinalStateNoNu")
+       )
+process.genJet.cfg = genPartonJetFactory
+
+########################################################
 ## Path definition
 ########################################################
 
 process.dump = cms.EDAnalyzer('EventContentAnalyzer')
 
 process.load('CMGTools.Common.PAT.addFilterPaths_cff')
-process.p = cms.Path(
-    process.prePathCounter + 
-    process.PATCMGSequence +
-    process.patLeptonFilter + # event skim requiring at least one lepton 
-    process.PATCMGJetCHSSequence  
-    )
 
-process.p += process.postPathCounter
-process.p += process.ttbar2bFilter
+process.p = cms.Path(
+    process.genForPartonicFinalStateNoNu +
+    process.PATCMGGenSequence +
+    process.ttbar2bFilter
+    )
 
 # For testing, you can remove some of the objects:
 # NOTE: there are a few dependencies between these sequences
@@ -167,13 +175,6 @@ if runOnFastSim :
     process.vertexWeightSequence.remove(process.vertexWeight3DFall112invfb)
     process.vertexWeightSequence.remove(process.vertexWeight3DFall112011B)
     process.vertexWeightSequence.remove(process.vertexWeight3DFall112011AB)
-
-########################################################
-## Parton level jet reconstruction 
-########################################################
-
-process.load("CMGTools.Common.generator.genForPartonicFinalState_cff")
-process.p += process.genForPartonicFinalStateNoNu
 
 ########################################################
 ## PAT output definition

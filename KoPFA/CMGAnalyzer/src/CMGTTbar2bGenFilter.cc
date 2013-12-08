@@ -18,6 +18,8 @@
 #include "TTree.h"
 #include "TFile.h"
 #include <vector>
+#include <TH1F.h>
+#include <TH2F.h>
 
 using namespace edm;
 using namespace std;
@@ -74,6 +76,8 @@ private:
 
   TH1F* h_multiplicity_addbGenJets20;
   TH1F* h_multiplicity_addbGenJets40;
+  TH1F* h_multiplicity_addGenJets20;
+  TH1F* h_multiplicity_addGenJets40;
 
   TH1F* h_multiplicity_GenJets;
   TH1F* h_multiplicity_GenJets10;
@@ -115,6 +119,8 @@ private:
   TH1F* h_eta_additional_bquarks_1;
   TH1F* h_pt_additional_bquarks_2;
   TH1F* h_eta_additional_bquarks_2;
+  TH2F* h_eta_mass_additional_bquarks_1;
+  TH2F* h_eta_mass_additional_bquarks_2;
   TH1F* h_dR_additional_bquarks_20GeV;
   TH1F* h_dR_additional_bquarks_40GeV;
 
@@ -164,6 +170,8 @@ CMGTTbar2bGenFilter::CMGTTbar2bGenFilter(const edm::ParameterSet& pset)
   h_eta_additional_bquarks_1 = fs->make<TH1F>("h_eta_additional_bquarks_1", "#Eta", 600, -3, 3);
   h_pt_additional_bquarks_2 = fs->make<TH1F>("h_pt_additional_bquarks_2", "p_{T}", 200, 0, 200);
   h_eta_additional_bquarks_2 = fs->make<TH1F>("h_eta_additional_bquarks_2", "#Eta", 600, -3, 3);
+  h_eta_mass_additional_bquarks_1 = fs->make<TH2F>("h_eta_mass_additional_bquarks_1", ";Mass;#eta", 1000, 0, 10, 600, -3, 3);
+  h_eta_mass_additional_bquarks_2 = fs->make<TH2F>("h_eta_mass_additional_bquarks_2", ";Mass;#eta", 1000, 0, 10, 600, -3, 3);
   h_dR_additional_bquarks_20GeV = fs->make<TH1F>("h_dR_additional_bquarks_20GeV", "#Delta R", 500, 0, 5);
   h_dR_additional_bquarks_40GeV = fs->make<TH1F>("h_dR_additional_bquarks_40GeV", "#Delta R", 500, 0, 5);
 
@@ -176,8 +184,10 @@ CMGTTbar2bGenFilter::CMGTTbar2bGenFilter(const edm::ParameterSet& pset)
   h_multiplicity_bGenJets20DILVIS  = fs->make<TH1F>( "h_multiplicity_bGenJets20DILVIS"  , "Multiplicity", 10,  0, 10 );
   h_multiplicity_bGenJets20DILVISTTBB  = fs->make<TH1F>( "h_multiplicity_bGenJets20DILVISTTBB"  , "Multiplicity", 10,  0, 10 );
 
-  h_multiplicity_addbGenJets20  = fs->make<TH1F>( "h_multiplicity_addbGenJets20"  , "Multiplicity", 10,  0, 10 );
-  h_multiplicity_addbGenJets40  = fs->make<TH1F>( "h_multiplicity_addbGenJets40"  , "Multiplicity", 10,  0, 10 );
+  h_multiplicity_addbGenJets20  = fs->make<TH1F>( "h_multiplicity_addbGenJets20"  , "b-Jet Multiplicity", 10,  0, 10 );
+  h_multiplicity_addbGenJets40  = fs->make<TH1F>( "h_multiplicity_addbGenJets40"  , "b-Jet Multiplicity", 10,  0, 10 );
+  h_multiplicity_addGenJets20  = fs->make<TH1F>( "h_multiplicity_addGenJets20"  , "Jet Multiplicity", 10,  0, 10 );
+  h_multiplicity_addGenJets40  = fs->make<TH1F>( "h_multiplicity_addGenJets40"  , "Jet Multiplicity", 10,  0, 10 );
 
   h_multiplicity_GenJets  = fs->make<TH1F>( "h_multiplicity_GenJets"  , "Multiplicity", 30,  0, 30 );
   h_multiplicity_GenJets10  = fs->make<TH1F>( "h_multiplicity_GenJets10"  , "Multiplicity", 12,  0, 12 );
@@ -311,13 +321,17 @@ bool CMGTTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& even
 
     double dR_addb = deltaR(ttbarGenLevel.bquarks3().eta(), ttbarGenLevel.bquarks3().phi(),ttbarGenLevel.bquarks4().eta(), ttbarGenLevel.bquarks4().phi()); 
     if( dR_addb > 0 ){
-      h_dR_additional_bquarks->Fill(dR_addb);
-      h_pt_additional_bquarks_1->Fill( ttbarGenLevel.bquarks3().pt() );
-      h_eta_additional_bquarks_1->Fill(ttbarGenLevel.bquarks3().eta() );
-      h_pt_additional_bquarks_2->Fill( ttbarGenLevel.bquarks4().pt() );
-      h_eta_additional_bquarks_2->Fill(ttbarGenLevel.bquarks4().eta() );
-      if( ttbarGenLevel.bquarks3().pt() > 20 && ttbarGenLevel.bquarks3().pt() > 20) h_dR_additional_bquarks_20GeV->Fill(dR_addb); 
-      if( ttbarGenLevel.bquarks3().pt() > 40 && ttbarGenLevel.bquarks3().pt() > 40) h_dR_additional_bquarks_40GeV->Fill(dR_addb); 
+      if( ttbarGenLevel.bquarks3().mass() > 0 && ttbarGenLevel.bquarks4().mass() > 0) { 
+        h_dR_additional_bquarks->Fill(dR_addb);
+        h_pt_additional_bquarks_1->Fill( ttbarGenLevel.bquarks3().pt() );
+        h_eta_additional_bquarks_1->Fill(ttbarGenLevel.bquarks3().eta() );
+        h_pt_additional_bquarks_2->Fill( ttbarGenLevel.bquarks4().pt() );
+        h_eta_additional_bquarks_2->Fill(ttbarGenLevel.bquarks4().eta() );
+        h_eta_mass_additional_bquarks_1->Fill(ttbarGenLevel.bquarks3().mass(), ttbarGenLevel.bquarks3().eta());
+        h_eta_mass_additional_bquarks_2->Fill(ttbarGenLevel.bquarks4().mass(), ttbarGenLevel.bquarks4().eta());
+        if( ttbarGenLevel.bquarks3().pt() > 20 && ttbarGenLevel.bquarks3().pt() > 20) h_dR_additional_bquarks_20GeV->Fill(dR_addb); 
+        if( ttbarGenLevel.bquarks3().pt() > 40 && ttbarGenLevel.bquarks3().pt() > 40) h_dR_additional_bquarks_40GeV->Fill(dR_addb); 
+      }
     }
 
     bool dil = ttbarGenLevel.diLeptonic() == 1 ;
@@ -358,8 +372,11 @@ bool CMGTTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& even
     h_multiplicity_bGenJets40->Fill( ttbarGenLevel.NbJets40(type_) );
     if( dil && vis ) h_multiplicity_bGenJets20DILVIS->Fill( ttbarGenLevel.NbJets20(type_) );
     if( dil && vis && ttbb ) h_multiplicity_bGenJets20DILVISTTBB->Fill( ttbarGenLevel.NbJets20(type_) );
+
     h_multiplicity_addbGenJets20->Fill( ttbarGenLevel.NaddbJets20(type_) );
     h_multiplicity_addbGenJets40->Fill( ttbarGenLevel.NaddbJets40(type_) );
+    h_multiplicity_addGenJets20->Fill( ttbarGenLevel.NaddJets20() );
+    h_multiplicity_addGenJets40->Fill( ttbarGenLevel.NaddJets40() );    
 
     h_nEvents->Fill(0);
     if( dil ) h_nEvents->Fill(1);
