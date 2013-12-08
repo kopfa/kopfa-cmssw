@@ -10,13 +10,12 @@ import time
 import os,commands
 import KoPFA.CommonTools.eostools as castortools
 
-def processSample( sampleline, dir, geninfo, tag):
+def processSample( sampleline, logdir, geninfo, tag, resultdir, nfile):
   
     sample = sampleline.split("%")
     name = sample[1].split("/")
-    eosdir = "/eos/cms/store/caf/user/tjkim/ttbb"
 
-    output = eosdir
+    output = resultdir
     for n in range(1,3):
      output = output +"/"+name[n]
      castortools.runEOSCommand(output,'mkdir')
@@ -24,10 +23,10 @@ def processSample( sampleline, dir, geninfo, tag):
     print output
     castortools.runEOSCommand(output,'mkdir')
 
-    os.system("mkdir "+dir+"/"+name[1])
-    os.system("mkdir "+dir+"/"+name[1]+"/"+tag)
-    os.system("mkdir "+dir+"/"+name[1]+"/"+tag+"/Log")
-    log = dir+"/"+name[1]+"/"+tag
+    os.system("mkdir "+logdir+"/"+name[1])
+    os.system("mkdir "+logdir+"/"+name[1]+"/"+tag)
+    os.system("mkdir "+logdir+"/"+name[1]+"/"+tag+"/Log")
+    log = logdir+"/"+name[1]+"/"+tag
     out = open(log+'/run_'+name[1]+'_cfg.py','w')
     print sample[0]
     print sample[1]
@@ -63,14 +62,16 @@ def processSample( sampleline, dir, geninfo, tag):
     out.writelines( toInsert )
     out.writelines( outputContent )
     out.close()
-    os.system("cmsBatch0.py 1 "+log+'/run_'+name[1]+'_cfg.py'+" -o "+log+"/Log"+" -r "+output+" -b 'bsub -G u_zh -q 2nd < batchScript.sh'")
+    os.system("cmsBatch0.py "+nfile+" "+log+'/run_'+name[1]+'_cfg.py'+" -o "+log+"/Log"+" -r "+output+" -b 'bsub -G u_zh -q 2nd < batchScript.sh'")
 
 from optparse import OptionParser
 
 parser = OptionParser()
 parser.add_option("-f", "--dataset-file", dest="filename", help="dataset list", metavar="FILE")
-parser.add_option("", "--cfg", dest="cfg", help="template config", metavar="FILE")
+parser.add_option("-c", "--cfg", dest="cfg", help="template config", metavar="CONF_FILE")
 parser.add_option("-t", "", dest="tag", help="release tag")
+parser.add_option("-r", "", dest="resultdir", help="base directory")
+parser.add_option("-n", "", dest="nfile", help="number of file per job")
 
 parser.add_option("","--gen", action="store_true", dest="geninfo",help="save generator level information?")
 parser.add_option("","--nogen", action="store_false", dest="geninfo",help="do not save generator level information?")
@@ -93,5 +94,8 @@ os.system("rfmkdir "+outdir)
 config = file(options.cfg).readlines()
 
 for s in datasets:
-  processSample(s, outdir, options.geninfo, options.tag)
+  if s == "":
+    break
+  print s
+  processSample(s, outdir, options.geninfo, options.tag, options.resultdir, options.nfile)
   #time.sleep(60)
