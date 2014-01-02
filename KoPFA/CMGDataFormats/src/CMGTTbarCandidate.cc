@@ -283,11 +283,16 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
   NbQuarks_ = (int) bquarks.size(); 
 
   int nbQuark20 = 0;
+  int nbQuark40 = 0;
+  int naddbQuark20 = 0;
+  int naddbQuark40 = 0;
+
   for( unsigned int i = 0 ; i < bquarksfromtop.size() ; i++){
     if( i < 2){
       bquarks_[i] = bquarksfromtop[i];
     }
     if( bquarksfromtop[i].pt() > 20 && fabs(bquarksfromtop[i].eta()) < 2.5) nbQuark20++;
+    if( bquarksfromtop[i].pt() > 40 && fabs(bquarksfromtop[i].eta()) < 2.5) nbQuark40++;
   }
 
   for( unsigned int i = 0 ; i < bquarksfromnotop.size() ; i++){
@@ -295,8 +300,14 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
       bquarks_[2+i] = bquarksfromnotop[i];
     }
     if( bquarksfromnotop[i].pt() > 20 && fabs(bquarksfromnotop[i].eta()) < 2.5) nbQuark20++;
+    if( bquarksfromnotop[i].pt() > 40 && fabs(bquarksfromnotop[i].eta()) < 2.5) nbQuark40++;
+    if( bquarksfromnotop[i].pt() > 20 && fabs(bquarksfromnotop[i].eta()) < 2.5) naddbQuark20++;
+    if( bquarksfromnotop[i].pt() > 40 && fabs(bquarksfromnotop[i].eta()) < 2.5) naddbQuark40++;
   }
   NbQuarks20_ = nbQuark20;
+  NbQuarks40_ = nbQuark40;
+  NaddbQuarks20_ = naddbQuark20;
+  NaddbQuarks40_ = naddbQuark40;
 
 //////
   bJets_.push_back(null);

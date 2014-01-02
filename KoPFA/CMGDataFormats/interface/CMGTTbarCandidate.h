@@ -92,6 +92,9 @@ namespace vallot{
     int NbQuarksNoTop() const { return NbQuarksNoTop_ ; }
     int NbQuarks() const { return NbQuarks_ ; }
     int NbQuarks20() const { return NbQuarks20_ ; }
+    int NbQuarks40() const { return NbQuarks40_ ; }
+    int NaddbQuarks20() const { return NaddbQuarks20_ ; }
+    int NaddbQuarks40() const { return NaddbQuarks40_ ; }
     int NcQuarks() const { return NcQuarks_; }
 
     int NbJets(int i=0) const {
@@ -278,6 +281,9 @@ namespace vallot{
     int NbQuarksNoTop_;
     int NbQuarksTop_;
     int NbQuarks20_;
+    int NbQuarks40_;
+    int NaddbQuarks20_;
+    int NaddbQuarks40_;
 
     int NcQuarks_;
 
