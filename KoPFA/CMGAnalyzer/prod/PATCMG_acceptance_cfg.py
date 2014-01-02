@@ -20,7 +20,7 @@ from CMGTools.Production.datasetToSource import *
 ## This is used to get the correct global tag below, and to find the files
 ## It is *reset* automatically by ProductionTasks, so you can use it after the ProductionTasksHook
 #datasetInfo = ('cmgtools_group', '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B','.*root')
-datasetInfo = ('cmgtools_group', '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B','.*root')
+datasetInfo = ('cmgtools_group', '/TTJets_FullLeptMGDecays_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v2/AODSIM/V5_B','.*root')
 process.source = datasetToSource(
     *datasetInfo
     )
@@ -36,7 +36,7 @@ print process.source.fileNames
 print sep_line 
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 
 print 'loading the main CMG sequence'
 
@@ -115,16 +115,17 @@ process.TFileService = cms.Service("TFileService",
 )
 process.load("KoPFA.CMGAnalyzer.ttbar2bFilter_cfi")
 
+#process.ttbar2bFilter.type = cms.untracked.int32(1)
 ########################################################
 ## Parton level jet reconstruction 
 ########################################################
 
 process.load("CMGTools.Common.generator.genForPartonicFinalState_cff")
 
-genPartonJetFactory = cms.PSet(
-       inputCollection = cms.InputTag("ak5GenJetsPartonicFinalStateNoNu")
-       )
-process.genJet.cfg = genPartonJetFactory
+#genPartonJetFactory = cms.PSet(
+#       inputCollection = cms.InputTag("ak5GenJetsPartonicFinalStateNoNu")
+#       )
+#process.genJet.cfg = genPartonJetFactory
 
 ########################################################
 ## Path definition
