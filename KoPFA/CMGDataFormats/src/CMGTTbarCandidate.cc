@@ -310,6 +310,9 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
   NaddbQuarks40_ = naddbQuark40;
 
 //////
+  cJets_.push_back(null);
+  cJets_.push_back(null);
+
   bJets_.push_back(null);
   bJets_.push_back(null);
   bJets_.push_back(null);
@@ -317,6 +320,12 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
 
   addbJets_.push_back(null);
   addbJets_.push_back(null);
+
+  addbJetsHad_.push_back(null);
+  addbJetsHad_.push_back(null);
+
+  addJets_.push_back(null);
+  addJets_.push_back(null);
 
   std::map<int, vector<const reco::Candidate*> > mapJetToBHadrons;
   std::map<int, int> mapJetToBMatched;
@@ -329,9 +338,10 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
   std::vector<math::XYZTLorentzVector> bJets;
   std::vector<math::XYZTLorentzVector> bJetsBHad;
   std::vector<math::XYZTLorentzVector> addbJetsBHad;
-  std::vector<math::XYZTLorentzVector> bJetsfromnotop;
+  std::vector<math::XYZTLorentzVector> addbJets;
   std::vector<math::XYZTLorentzVector> cJets;
   std::vector<math::XYZTLorentzVector> cJetsCHad;
+  std::vector<math::XYZTLorentzVector> addJets;  
 
   int idx = 0;
 
@@ -341,12 +351,11 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
   NJets30_ = 0;
   NJets40_ = 0;
 
-  NaddJets20_ = 0;
-  NaddJets40_ = 0;
-
+  //Gen-jets loop
   for (std::vector<cmg::GenJet>::const_iterator genJet=genJets->begin();genJet!=genJets->end();++genJet, ++idx){
     const reco::Candidate& gJet = *genJet;
 
+    //clean jets with leptons
     double minDRlepton = 999;
     for(unsigned int i=0 ; i < leptons_.size() ; i++){
       if( leptons_[i] == null ) continue;
@@ -367,7 +376,7 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
       double dR = reco::deltaR(gJet.eta(), gJet.phi(), bquarksfromnotop[i].eta(), bquarksfromnotop[i].phi());
       if( dR < minDR2b ) minDR2b = dR;
     }
-    if( minDR2b < 0.5 ) bJetsfromnotop.push_back(gJet.p4());
+    if( minDR2b < 0.5 ) addbJets.push_back(gJet.p4());
 
     double minDR2c = 999;
     for(unsigned int i=0 ; i < cquarks.size() ; i++){
@@ -389,10 +398,10 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
     }
 
     if( minDRtop > 0.5 ){
-      if( gJet.pt() > 40 && fabs(gJet.eta()) < 2.5 ) NaddJets40_++;
-      if( gJet.pt() > 20 && fabs(gJet.eta()) < 2.5 ) NaddJets20_++;
+      addJets.push_back(gJet.p4());
     }
 
+    //Looking at Jet constituents
     bool isPAT = genJet->sourcePtr()->isAvailable(); 
     bool istopdecay = false;
     if( isPAT ){
@@ -517,7 +526,7 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
 
   for( unsigned int i = 0 ; i < addbJetsBHad.size() ; i++){
     if( i < 2 ){
-      addbJets_[i] = addbJetsBHad[i];
+      addbJetsHad_[i] = addbJetsBHad[i];
     }
     NaddbJetsBHad_++;
     if( addbJetsBHad[i].pt() > 20 && fabs(addbJetsBHad[i].eta()) < 2.5) NaddbJets20BHad_++;
@@ -543,6 +552,9 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
   NcJets40CHad_ = 0;
 
   for( unsigned int i = 0 ; i < cJetsCHad.size() ; i++){
+    if( i < 2 ){
+      cJets_[i] = cJetsCHad[i];
+    }
     NcJetsCHad_++;
     if( cJetsCHad[i].pt() > 10 && fabs(cJetsCHad[i].eta()) < 2.5) NcJets10CHad_++;
     if( cJetsCHad[i].pt() > 20 && fabs(cJetsCHad[i].eta()) < 2.5) NcJets20CHad_++;
@@ -568,10 +580,13 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
   NbJets20NoTop_ = 0;
   NbJets40NoTop_ = 0;
 
-  for( unsigned int i = 0 ; i < bJetsfromnotop.size() ; i++){
+  for( unsigned int i = 0 ; i < addbJets.size() ; i++){
+    if( i < 2 ){
+      addbJets_[i] = addbJets[i];
+    }
     NbJetsNoTop_++;
-    if( bJetsfromnotop[i].pt() > 20 && fabs(bJetsfromnotop[i].eta()) < 2.5) NbJets20NoTop_++;
-    if( bJetsfromnotop[i].pt() > 40 && fabs(bJetsfromnotop[i].eta()) < 2.5) NbJets40NoTop_++;
+    if( addbJets[i].pt() > 20 && fabs(addbJets[i].eta()) < 2.5) NbJets20NoTop_++;
+    if( addbJets[i].pt() > 40 && fabs(addbJets[i].eta()) < 2.5) NbJets40NoTop_++;
   }
 
   NcJets_ = 0;
@@ -588,6 +603,26 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
     if( cJets[i].pt() > 40 && fabs(cJets[i].eta()) < 2.5) NcJets40_++;
   }
 
+  NaddJets20_ = 0;
+  NaddJets40_ = 0;
+
+  for( unsigned int i = 0 ; i < addJets.size(); i++){
+    if( i < 2 ) addJets_[i] = addJets[i];
+    if( addJets[i].pt() > 40 && fabs(addJets[i].eta()) < 2.5 ) NaddJets40_++;
+    if( addJets[i].pt() > 20 && fabs(addJets[i].eta()) < 2.5 ) NaddJets20_++;
+  }
+
+  dRaddJets_ = 0;
+  dRaddbJets_ = 0;
+  dRaddbJetsHad_ = 0;
+  dRcJets_ = 0;  
+  dRcJetsHad_ = 0;  
+
+  if( addJets.size() >= 2) dRaddJets_ = reco::deltaR(addJets[0].eta(), addJets[0].phi(), addJets[1].eta(), addJets[1].phi()); 
+  if( addbJetsBHad.size() >= 2) dRaddbJetsHad_ = reco::deltaR(addbJetsBHad[0].eta(), addbJetsBHad[0].phi(), addbJetsBHad[1].eta(), addbJetsBHad[1].phi()); 
+  if( cJetsCHad.size() >= 2) dRcJetsHad_ = reco::deltaR(cJetsCHad[0].eta(), cJetsCHad[0].phi(), cJetsCHad[1].eta(), cJetsCHad[1].phi());
+  if( addbJets.size() >= 2) dRaddbJets_ = reco::deltaR(addbJets[0].eta(), addbJets[0].phi(), addbJets[1].eta(), addbJets[1].phi()); 
+  if( cJets.size() >= 2) dRcJets_ = reco::deltaR(cJets[0].eta(), cJets[0].phi(), cJets[1].eta(), cJets[1].phi());
 }
 
 std::vector<const reco::Candidate *> CMGTTbarCandidate::getAncestors(const reco::Candidate &c)

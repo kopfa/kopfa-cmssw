@@ -21,6 +21,7 @@ from CMGTools.Production.datasetToSource import *
 ## It is *reset* automatically by ProductionTasks, so you can use it after the ProductionTasksHook
 #datasetInfo = ('cmgtools_group', '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B','.*root')
 datasetInfo = ('cmgtools_group', '/TTJets_FullLeptMGDecays_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v2/AODSIM/V5_B','.*root')
+#datasetInfo = ('cmgtools_group', '/TT_8TeV-mcatnlo/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B','.*root')
 process.source = datasetToSource(
     *datasetInfo
     )
@@ -36,7 +37,7 @@ print process.source.fileNames
 print sep_line 
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 print 'loading the main CMG sequence'
 
@@ -134,6 +135,8 @@ process.load("CMGTools.Common.generator.genForPartonicFinalState_cff")
 process.dump = cms.EDAnalyzer('EventContentAnalyzer')
 
 process.load('CMGTools.Common.PAT.addFilterPaths_cff')
+
+#process.listParticles.maxEventsToPrint = cms.untracked.int32(-1)
 
 process.p = cms.Path(
     process.genForPartonicFinalStateNoNu +

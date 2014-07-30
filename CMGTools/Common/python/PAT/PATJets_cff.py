@@ -109,7 +109,7 @@ PATJetSequence = cms.Sequence(
     patJets +
     jetsPtGt1 +
     nJetsPtGt1 + 
-    selectedPatJets +
+    selectedPatJets + 
     patJetsWithVar +
     puJetId +
     outTracks +

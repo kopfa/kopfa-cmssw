@@ -39,17 +39,41 @@ namespace vallot{
     const math::XYZTLorentzVector taunu1() const { return taunus_[0]; }
     const math::XYZTLorentzVector taunu2() const { return taunus_[1]; }
 
+    const math::XYZTLorentzVector cJets1() const { return cJets_[0]; }
+    const math::XYZTLorentzVector cJets2() const { return cJets_[1]; }
+    
     const math::XYZTLorentzVector bJets1() const { return bJets_[0]; }
     const math::XYZTLorentzVector bJets2() const { return bJets_[1]; }
     const math::XYZTLorentzVector bJets3() const { return bJets_[2]; }
     const math::XYZTLorentzVector bJets4() const { return bJets_[3]; }
   
-    const math::XYZTLorentzVector addbJets1() const { return addbJets_[0]; }
-    const math::XYZTLorentzVector addbJets2() const { return addbJets_[1]; }
- 
+    const math::XYZTLorentzVector addbJets1(int i = 0) const { 
+      if( i == 0) return addbJetsHad_[0];
+      else return addbJets_[0]; 
+    }
+
+    const math::XYZTLorentzVector addbJets2(int i = 0) const { 
+      if( i == 0) return addbJetsHad_[1];
+      else return addbJets_[1];      
+    }
+
+    const math::XYZTLorentzVector addJets1() const { return addJets_[0]; }
+    const math::XYZTLorentzVector addJets2() const { return addJets_[1]; }
+
     void building( const std::vector<cmg::GenJet>* genJets, const reco::GenParticleCollection* genParticles );
 
     double mass() const { return mass_; }
+
+    double dRaddJets() const { return dRaddJets_; }
+
+    double dRaddbJets(int i=0) const { 
+      if( i == 0){ return dRaddbJetsHad_; } 
+      else return dRaddbJets_; 
+    }
+    double dRcJets(int i=0) const { 
+      if( i == 0){ return dRcJetsHad_; }
+      else return dRcJets_; 
+    }
 
     bool taunic(int i = -1) const { 
       bool hasTau = false;
@@ -210,8 +234,11 @@ namespace vallot{
     LorentzVectors leptons_;
     LorentzVectors nus_;
     LorentzVectors taunus_;
+    LorentzVectors cJets_;
     LorentzVectors bJets_;
     LorentzVectors addbJets_;
+    LorentzVectors addbJetsHad_;
+    LorentzVectors addJets_;
 
     double mass_;
 
@@ -297,7 +324,16 @@ namespace vallot{
 
     int NaddJets20_;
     int NaddJets40_;
- 
+
+
+    double dRaddJets_;
+
+    double dRaddbJets_;
+    double dRcJets_;
+
+    double dRaddbJetsHad_;
+    double dRcJetsHad_;
+
   };
 
 }

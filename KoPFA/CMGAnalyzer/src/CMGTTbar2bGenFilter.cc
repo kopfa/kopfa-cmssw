@@ -115,6 +115,9 @@ private:
   TH1F* h_multiplicity_GenJets30DILVISTTCC;
 
   TH1F* h_dR_additional_bquarks;
+  TH1F* h_dR_additional_bjets;
+  TH1F* h_dR_3rd4th_bjets;
+
   TH1F* h_pt_additional_bquarks_1;
   TH1F* h_eta_additional_bquarks_1;
   TH1F* h_pt_additional_bquarks_2;
@@ -134,8 +137,11 @@ private:
   TH1F* h_nEvents_40GeV_parton;
   TH1F* h_nEvents_40GeV_addparton;
 
-  TH1F* h_nEvents_inclusive;
-  TH1F* h_nEvents_parton_inclusive;
+  TH1F* h_nEvents_inc_addjets_dRcut_20GeV;
+  TH1F* h_nEvents_inc_addjets_dRcut_40GeV;
+
+  TH1F* h_nEvents_addjets_dRcut;
+  TH1F* h_nEvents_40GeV_addjets_dRcut;
 
   std::vector<vallot::CMGTTbarCandidate>* ttbarGen;
 
@@ -169,12 +175,16 @@ CMGTTbar2bGenFilter::CMGTTbar2bGenFilter(const edm::ParameterSet& pset)
   h_multiplicity_bGenJets  = fs->make<TH1F>( "h_multiplicity_bGenJets"  , "Multiplicity", 10,  0, 10 );
 
   h_dR_additional_bquarks = fs->make<TH1F>("h_dR_additional_bquarks", "#Delta R", 500, 0, 5);
+  h_dR_additional_bjets = fs->make<TH1F>("h_dR_additional_bjets", "#Delta R", 500, 0, 5);
+  h_dR_3rd4th_bjets = fs->make<TH1F>("h_dR_3rd4th_bjets", "#Delta R", 500, 0, 5);
+
   h_pt_additional_bquarks_1 = fs->make<TH1F>("h_pt_additional_bquarks_1", "p_{T}", 200, 0, 200);
   h_eta_additional_bquarks_1 = fs->make<TH1F>("h_eta_additional_bquarks_1", "#Eta", 600, -3, 3);
   h_pt_additional_bquarks_2 = fs->make<TH1F>("h_pt_additional_bquarks_2", "p_{T}", 200, 0, 200);
   h_eta_additional_bquarks_2 = fs->make<TH1F>("h_eta_additional_bquarks_2", "#Eta", 600, -3, 3);
   h_eta_mass_additional_bquarks_1 = fs->make<TH2F>("h_eta_mass_additional_bquarks_1", ";Mass;#eta", 1000, 0, 10, 600, -3, 3);
   h_eta_mass_additional_bquarks_2 = fs->make<TH2F>("h_eta_mass_additional_bquarks_2", ";Mass;#eta", 1000, 0, 10, 600, -3, 3);
+
   h_dR_additional_bquarks_20GeV = fs->make<TH1F>("h_dR_additional_bquarks_20GeV", "#Delta R", 500, 0, 5);
   h_dR_additional_bquarks_40GeV = fs->make<TH1F>("h_dR_additional_bquarks_40GeV", "#Delta R", 500, 0, 5);
 
@@ -229,16 +239,18 @@ CMGTTbar2bGenFilter::CMGTTbar2bGenFilter(const edm::ParameterSet& pset)
 
   h_nEvents = fs->make<TH1F>( "h_nEvents"  , "h_nEvents", 7,  0, 7 );
   h_nEvents_addjets = fs->make<TH1F>( "h_nEvents_addjets"  , "h_nEvents_addjets", 7,  0, 7 );
+  h_nEvents_addjets_dRcut = fs->make<TH1F>( "h_nEvents_addjets_dRcut"  , "h_nEvents_addjets_dRcut", 7,  0, 7 );
   h_nEvents_parton = fs->make<TH1F>( "h_nEvents_parton"  , "h_nEvents_parton", 6,  0, 6 );
   h_nEvents_addparton = fs->make<TH1F>( "h_nEvents_addparton"  , "h_nEvents_addparton", 6,  0, 6 );
 
   h_nEvents_40GeV = fs->make<TH1F>( "h_nEvents_40GeV"  , "h_nEvents_40GeV", 7,  0, 7 );
   h_nEvents_40GeV_addjets = fs->make<TH1F>( "h_nEvents_40GeV_addjets"  , "h_nEvents_40GeV_addjets", 7,  0, 7 );
+  h_nEvents_40GeV_addjets_dRcut = fs->make<TH1F>( "h_nEvents_40GeV_addjets_dRcut"  , "h_nEvents_40GeV_addjets_dRcut", 7,  0, 7 );
   h_nEvents_40GeV_parton = fs->make<TH1F>( "h_nEvents_40GeV_parton"  , "h_nEvents_40GeV_parton", 6,  0, 6 );
   h_nEvents_40GeV_addparton = fs->make<TH1F>( "h_nEvents_40GeV_addparton"  , "h_nEvents_40GeV_addparton", 6,  0, 6 );
 
-  h_nEvents_inclusive = fs->make<TH1F>( "h_nEvents_inclusive"  , "h_nEvents", 6,  0, 6 );
-  h_nEvents_parton_inclusive = fs->make<TH1F>( "h_nEvents_parton_inclusive"  , "h_nEvents_parton", 6,  0, 6 );
+  h_nEvents_inc_addjets_dRcut_20GeV = fs->make<TH1F>( "h_nEvents_inc_addjets_dRcut_20GeV"  , "h_nEvents_inc_addjets_dRcut_20GeV", 3,  0, 3 );
+  h_nEvents_inc_addjets_dRcut_40GeV = fs->make<TH1F>( "h_nEvents_inc_addjets_dRcut_40GeV"  , "h_nEvents_inc_addjets_dRcut_40GeV", 3,  0, 3 );
 
   ttbarGen = new std::vector<vallot::CMGTTbarCandidate>();
 }
@@ -340,6 +352,11 @@ bool CMGTTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& even
       }
     }
 
+    double dR_3rd4th = deltaR(ttbarGenLevel.bJets3().eta(),ttbarGenLevel.bJets3().phi(),ttbarGenLevel.bJets4().eta(),ttbarGenLevel.bJets4().phi());
+    double dR_addbjets = deltaR(ttbarGenLevel.addbJets1().eta(), ttbarGenLevel.addbJets1().phi(), ttbarGenLevel.addbJets2().eta(), ttbarGenLevel.addbJets2().phi());
+    if( dR_3rd4th > 0 ) h_dR_3rd4th_bjets->Fill(dR_3rd4th);
+    if( dR_addbjets > 0 ) h_dR_additional_bjets->Fill(dR_addbjets);
+
     bool dil = ttbarGenLevel.diLeptonic() == 1 ;
     bool divis = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 ;
 
@@ -349,21 +366,29 @@ bool CMGTTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& even
     bool njets4 = ttbarGenLevel.NJets20() >= 4;
     bool ttbb = ttbarGenLevel.NbJets20(type_) >= 4;
     bool ttcc = ttbarGenLevel.NcJets20(type_) >= 2;
+    bool ttcc_dRcut = ttcc && ttbarGenLevel.dRcJets(type_) > 0.5;
 
     bool addvis = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 && ttbarGenLevel.NaddJets20() >= 2;
     bool addttb = ttbarGenLevel.NaddbJets20(type_) == 1;
     bool addttbb = ttbarGenLevel.NaddbJets20(type_) >= 2;
- 
+    bool addvis_dRcut = addvis && ttbarGenLevel.dRaddJets() > 0.5;
+    bool addttbb_dRcut = addttbb && ttbarGenLevel.dRaddbJets(type_) > 0.5;
+    //if( addttbb ){
+      //cout << "add dR= " << dR_addbjets << " from fun. = " << ttbarGenLevel.dRaddbJets() << endl; 
+    //}
     bool vis_40GeV = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 && ttbarGenLevel.NbJets40(type_) >= 2;
     bool nbjets2_40GeV = ttbarGenLevel.NbJets40(type_) >= 2;
     bool ttb_40GeV = ttbarGenLevel.NbJets40(type_) == 3;
     bool njets4_40GeV = ttbarGenLevel.NJets40() >= 4;
     bool ttbb_40GeV = ttbarGenLevel.NbJets40(type_) >= 4;
     bool ttcc_40GeV = ttbarGenLevel.NcJets40(type_) >= 2;
+    bool ttcc_dRcut_40GeV = ttcc_40GeV && ttbarGenLevel.dRcJets(type_) > 0.5;
 
     bool addvis_40GeV = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 && ttbarGenLevel.NaddJets40() >= 2;
     bool addttb_40GeV = ttbarGenLevel.NaddbJets40(type_) == 1;
     bool addttbb_40GeV = ttbarGenLevel.NaddbJets40(type_) >= 2;
+    bool addvis_dRcut_40GeV = addvis_40GeV && ttbarGenLevel.dRaddJets() > 0.5;
+    bool addttbb_dRcut_40GeV = addttbb_40GeV && ttbarGenLevel.dRaddbJets(type_) > 0.5;
 
     bool nbpartons2 = ttbarGenLevel.NbQuarks20() >= 2;
     bool ttbb_parton = ttbarGenLevel.NbQuarks20() >= 4;
@@ -408,6 +433,14 @@ bool CMGTTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& even
     if( dil && addvis && !addttbb && addttb ) h_nEvents_addjets->Fill(5);
     if( dil && addvis && !addttbb && !addttb && ttcc ) h_nEvents_addjets->Fill(6);
 
+    h_nEvents_addjets_dRcut->Fill(0);
+    if( dil ) h_nEvents_addjets_dRcut->Fill(1);
+    if( dil && divis ) h_nEvents_addjets_dRcut->Fill(2);
+    if( dil && addvis_dRcut ) h_nEvents_addjets_dRcut->Fill(3);
+    if( dil && addvis_dRcut && addttbb_dRcut ) h_nEvents_addjets_dRcut->Fill(4);
+    if( dil && addvis_dRcut && !addttbb_dRcut && addttb ) h_nEvents_addjets_dRcut->Fill(5);
+    if( dil && addvis_dRcut && !addttbb_dRcut && !addttb && ttcc_dRcut ) h_nEvents_addjets_dRcut->Fill(6);
+
     h_nEvents_parton->Fill(0);
     if( dil ) h_nEvents_parton->Fill(1);
     if( dil && divis && nbpartons2 ) h_nEvents_parton->Fill(2);
@@ -438,6 +471,14 @@ bool CMGTTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& even
     if( dil && addvis_40GeV && !addttbb_40GeV && addttb_40GeV ) h_nEvents_40GeV_addjets->Fill(5);
     if( dil && addvis_40GeV && !addttbb_40GeV && !addttb_40GeV && ttcc_40GeV ) h_nEvents_40GeV_addjets->Fill(6);
 
+    h_nEvents_40GeV_addjets_dRcut->Fill(0);
+    if( dil ) h_nEvents_40GeV_addjets_dRcut->Fill(1);
+    if( dil && divis ) h_nEvents_40GeV_addjets_dRcut->Fill(2);
+    if( dil && addvis_dRcut_40GeV  ) h_nEvents_40GeV_addjets_dRcut->Fill(3);
+    if( dil && addvis_dRcut_40GeV && addttbb_dRcut_40GeV ) h_nEvents_40GeV_addjets_dRcut->Fill(4);
+    if( dil && addvis_dRcut_40GeV && !addttbb_dRcut_40GeV && addttb_40GeV ) h_nEvents_40GeV_addjets_dRcut->Fill(5);
+    if( dil && addvis_dRcut_40GeV && !addttbb_dRcut_40GeV && !addttb_40GeV && ttcc_dRcut_40GeV ) h_nEvents_40GeV_addjets_dRcut->Fill(6);
+
     h_nEvents_40GeV_parton->Fill(0);
     if( dil ) h_nEvents_40GeV_parton->Fill(1);
     if( dil && divis && nbpartons2_40GeV ) h_nEvents_40GeV_parton->Fill(2);
@@ -452,19 +493,13 @@ bool CMGTTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& even
     if( dil && addvis_40GeV && addttbb_parton_40GeV ) h_nEvents_40GeV_addparton->Fill(4);
     if( dil && addvis_40GeV && addttb_parton_40GeV ) h_nEvents_40GeV_addparton->Fill(5);
  
-    if( njets4 && nbjets2 ) h_nEvents_inclusive->Fill(0);
-    if( njets4 && nbjets2 && ttbb  ) h_nEvents_inclusive->Fill(1);
-    if( dil && nbjets2 && njets4  ) h_nEvents_inclusive->Fill(2);
-    if( dil && nbjets2 && njets4 && ttbb  ) h_nEvents_inclusive->Fill(3);
-    if( vis && njets4  ) h_nEvents_inclusive->Fill(4);
-    if( vis && njets4 && ttbb  ) h_nEvents_inclusive->Fill(5);
+    h_nEvents_inc_addjets_dRcut_20GeV->Fill(0);
+    if( ttbarGenLevel.NaddJets20() >= 2 && ttbarGenLevel.dRaddJets() > 0.5 ) h_nEvents_inc_addjets_dRcut_20GeV->Fill(1);
+    if( ttbarGenLevel.NaddbJets20(type_) >= 2 && ttbarGenLevel.dRaddbJets(type_) > 0.5 ) h_nEvents_inc_addjets_dRcut_20GeV->Fill(2);
 
-    if( njets4 && nbpartons2 ) h_nEvents_parton_inclusive->Fill(0);
-    if( njets4 && nbpartons2 && ttbb_parton  ) h_nEvents_parton_inclusive->Fill(1);
-    if( dil && nbpartons2 && njets4  ) h_nEvents_parton_inclusive->Fill(2);
-    if( dil && nbpartons2 && njets4 && ttbb_parton  ) h_nEvents_parton_inclusive->Fill(3);
-    if( divis && nbpartons2 && njets4  ) h_nEvents_parton_inclusive->Fill(4);
-    if( divis && nbpartons2 && njets4 && ttbb_parton  ) h_nEvents_parton_inclusive->Fill(5);
+    h_nEvents_inc_addjets_dRcut_40GeV->Fill(0);
+    if( ttbarGenLevel.NaddJets40() >= 2 && ttbarGenLevel.dRaddJets() > 0.5 ) h_nEvents_inc_addjets_dRcut_40GeV->Fill(1);
+    if( ttbarGenLevel.NaddbJets40(type_) >= 2 && ttbarGenLevel.dRaddbJets(type_) > 0.5 ) h_nEvents_inc_addjets_dRcut_40GeV->Fill(2);
  
     h_multiplicity_GenJets->Fill( ttbarGenLevel.NJets() );
     h_multiplicity_GenJets10->Fill( ttbarGenLevel.NJets10() );
